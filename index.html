@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Absensi Digital</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+        .alert {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+        .alert-success { background-color: #d1fae5; color: #065f46; }
+        .alert-error { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Sistem Absensi Digital</h2>
+        <form id="absensiForm">
+            <div class="form-group">
+                <label for="NomorID">NISN</label>
+                <input type="text" id="NomorID" name="NomorID" placeholder="Contoh: 0081234567" required>
+            </div>
+            <div class="form-group">
+                <label for="Nama">Nama Lengkap</label>
+                <input type="text" id="Nama" name="Nama" placeholder="Contoh: Budi Santoso" required>
+            </div>
+            <div class="form-group">
+                <label for="Keterangan">Status Kehadiran</label>
+                <select id="Keterangan" name="Keterangan" required>
+                    <option value="" disabled selected>-- Pilih Status --</option>
+                    <option value="Hadir">Hadir</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Sakit">Sakit</option>
+                </select>
+            </div>
+            <button type="submit" id="submitBtn">Kirim Absen</button>
+        </form>
+        <div id="alertBox" class="alert"></div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxTR1XTCdpbj5pkxk5VchxzEntDpVBgga7_slI1avahYyZITc2Yb-ckKqsRmLG7may0bQ/exec';
+        
+        const form = document.getElementById('absensiForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const alertBox = document.getElementById('alertBox');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Menyimpan Absen...';
+            alertBox.style.display = 'none';
+
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+                .then(response => {
+                    alertBox.textContent = 'Absensi berhasil dicatat!';
+                    alertBox.className = 'alert alert-success';
+                    alertBox.style.display = 'block';
+                    form.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Kirim Absen';
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    alertBox.textContent = 'Gagal mencatat absensi.';
+                    alertBox.className = 'alert alert-error';
+                    alertBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Kirim Absen';
+                });
+        });
+    </script>
+</body>
+</html>
